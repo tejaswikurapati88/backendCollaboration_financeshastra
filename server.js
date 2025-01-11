@@ -36,20 +36,6 @@ const connectAndStartServer= async ()=>{
 
 connectAndStartServer()
 
-app.get('/api/userpayment', async (req, res)=>{
-    try{
-        if (!dbConnection){
-            return res.status(500).json({ error: 'Database connection is not established' });
-        }
-        const selectQuery = 'SELECT * FROM user_payment_details';
-        const [users] = await dbConnection.query(selectQuery); 
-        res.json(users);
-    }catch(error){
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-})
-
 app.post('/api/user/payment', async (req, res)=>{
     try{
         if (!dbConnection){
@@ -60,6 +46,7 @@ app.post('/api/user/payment', async (req, res)=>{
         if (fullName === ""|| cardNumber==="" || expirationDate=== "" || securityCode==="" || country=== ""||
             state === ""|| city==="" || addressLine1=== "" || addressLine2==="" || postalCode=== "" || billingCycle===''
             || termsAccepted==="" || planId===""){
+                console.log('fill all details')
             return res.status(400).json({message: "All the details should be provided"})
         }else{
             if (termsAccepted === false){
@@ -86,6 +73,34 @@ app.delete('/api/deleteuserpatment/', async (req, res)=>{
         const deleteSQL= `Delete from user_payment_details where idElite_payment_premium_form= 2`
         await dbConnection.query(deleteSQL)
         res.status(200).json({message: "user details deleted Successfully"})
+    }catch(e){
+        console.error('Error fetching users:', e);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
+app.get('/api/userpayment', async (req, res)=>{
+    try{
+        if (!dbConnection){
+            return res.status(500).json({ error: 'Database connection is not established' });
+        }
+        const selectQuery = 'SELECT * FROM user_payment_details';
+        const [users] = await dbConnection.query(selectQuery); 
+        res.json(users);
+    }catch(error){
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
+app.get('/api/stocks', async (req, res)=>{
+    try{
+        if (!dbConnection){
+            return res.status(500).json({error: 'Database connection is not established'})
+        }
+        const stocksQuery=`select * from stocks;`;
+        const [stocks] = await dbConnection.query(stocksQuery)
+        res.status(200).json(stocks);
     }catch(e){
         console.error('Error fetching users:', e);
         res.status(500).json({ error: 'Internal Server Error' });
